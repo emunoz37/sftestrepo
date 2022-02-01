@@ -23,13 +23,14 @@ node {
         checkout scm
     }
 
+    agent any
+    environment {
+        // Removed other variables for clarity...
+        SFDX_USE_GENERIC_UNIX_KEYCHAIN = true
+        // ...
+    }
+
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-        agent any
-        environment {
-            // Removed other variables for clarity...
-            SFDX_USE_GENERIC_UNIX_KEYCHAIN = true
-            // ...
-        }
         stage('Deploye Code') {
             if (isUnix()) {
                 rc = sh returnStatus: true, script: "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
