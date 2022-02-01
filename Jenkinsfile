@@ -1,6 +1,6 @@
 #!groovy
 import groovy.json.JsonSlurperClassic
-node {
+//node {
 
     /* println 'KEY IS' 
     println JWT_KEY_CRED_ID
@@ -63,4 +63,4 @@ node {
 
 
     
-}
+//}
