@@ -33,24 +33,22 @@ node {
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
 
         stage('Authorize DevHub') {
-            rc = command "sfdx auth:jwt:grant --instanceurl ${SFDC_HOST} --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --setalias HubOrg"
+            /* rc = sh "sfdx auth:jwt:grant --instanceurl ${SFDC_HOST} --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --setalias HubOrg"
             if (rc != 0) {
                 error 'Salesforce dev hub org authorization failed.'
+            } */
+
+            if (isUnix()) {
+                rc = sh returnStatus: true, script: "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
+            }else{
+                 rc = bat returnStatus: true, script: "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
             }
+            if (rc != 0) { error 'hub org authorization failed' }
 
             println rc
         }
 
-        // stage('Deploy Code') {
-        //     /* if (isUnix()) {
-        //         rc = sh returnStatus: true, script: "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-        //     }else{
-        //          rc = bat returnStatus: true, script: "sfdx force:auth:jwt:grant --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile \"${jwt_key_file}\" --setdefaultdevhubusername --instanceurl ${SFDC_HOST}"
-        //     }
-        //     if (rc != 0) { error 'hub org authorization failed' }
-
-		// 	println rc */
-			
+        // stage('Deploy Code') {			
 		// 	// need to pull out assigned username
 		// 	if (isUnix()) {
 		// 		rmsg = sh returnStdout: true, script: "sfdx force:mdapi:deploy -d manifest/. -u ${HUB_ORG}"
@@ -62,13 +60,5 @@ node {
         //     println('Hello from a Job DSL script!')
         //     println(rmsg)
         // }
-
-        def command(script) {
-            if (isUnix()) {
-                return sh(returnStatus: true, script: script);
-            } else {
-                return bat(returnStatus: true, script: script);
-            }
-        }
     }
 }
