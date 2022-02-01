@@ -31,7 +31,7 @@ node {
     } */
 
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-
+        agent any
         environment {
         // Removed other variables for clarity...
         SFDX_USE_GENERIC_UNIX_KEYCHAIN = true
