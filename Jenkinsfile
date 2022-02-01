@@ -31,14 +31,9 @@ node {
     } */
 
     withCredentials([file(credentialsId: JWT_KEY_CRED_ID, variable: 'jwt_key_file')]) {
-        agent any
-        environment {
-        // Removed other variables for clarity...
-        SFDX_USE_GENERIC_UNIX_KEYCHAIN = true
-        // ...
-    }
+
         stage('Authorize DevHub') {
-            rc = sh "sfdx force:auth:jwt:grant --instanceurl ${SFDC_HOST} --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --setalias HubOrg"
+            rc = command "sfdx force:auth:jwt:grant --instanceurl ${SFDC_HOST} --clientid ${CONNECTED_APP_CONSUMER_KEY} --username ${HUB_ORG} --jwtkeyfile ${jwt_key_file} --setdefaultdevhubusername --setalias HubOrg"
             if (rc != 0) {
                 error 'Salesforce dev hub org authorization failed.'
             }
