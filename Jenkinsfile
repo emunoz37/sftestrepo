@@ -38,7 +38,7 @@ node {
                 error 'Salesforce dev hub org authorization failed.'
             }
 
-            //println rc
+            println rc
         }
 
         // stage('Deploy Code') {
